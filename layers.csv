@@ -1,0 +1,4 @@
+layer_name,attachment,limit,aal,alae_treatment
+L1,1000000,1000000,2000000,pro_rata
+L2,2000000,3000000,5000000,part_of
+L3,5000000,5000000,5000000,excluded
