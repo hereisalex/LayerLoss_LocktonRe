@@ -54,6 +54,10 @@ python -m pytest tests/ -v
 
 - **Type-safe contracts** — Public APIs use `Literal["excluded", "pro_rata", "part_of"]` (via the `AlaeTreatment` type alias) rather than bare `str`, making the valid inputs self-documenting and statically checkable. Each module exports an `__all__` to declare its public surface.
 
+## Assignment Completion Report
+
+For a detailed, point-by-point walkthrough of how each requirement and evaluation criterion is addressed — with direct links to the implementing code, design rationale, and manual correctness traces — see [layer_loss_assignment_completed.md](layer_loss_assignment_completed.md).
+
 ## AI Tool Usage
 
 I used an AI coding assistant (Antigravity / Claude) as a pair-programming partner throughout this project. Specifically:
