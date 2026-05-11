@@ -5,6 +5,8 @@ used in reinsurance contracts to determine how much of each claim is
 ceded to a given layer, before the Annual Aggregate Limit is applied.
 """
 
+from typing import Callable
+
 
 def clamp(x: float, lo: float, hi: float) -> float:
     """Clamp *x* between *lo* and *hi* inclusive.
@@ -55,7 +57,7 @@ def _ceded_part_of(
 # ---------------------------------------------------------------------------
 # Dispatch table — maps treatment name → calculation function
 # ---------------------------------------------------------------------------
-_TREATMENT_DISPATCH: dict[str, callable] = {
+_TREATMENT_DISPATCH: dict[str, Callable] = {
     "excluded": lambda loss, alae, att, lim: _ceded_excluded(loss, att, lim),
     "pro_rata": _ceded_pro_rata,
     "part_of": _ceded_part_of,

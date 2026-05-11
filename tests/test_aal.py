@@ -1,7 +1,9 @@
 """Unit tests for src.aal — Annual Aggregate Limit bookkeeping."""
 
 import pandas as pd
+# pyrefly: ignore [missing-import]
 import pytest
+
 
 from src.aal import apply_aal
 

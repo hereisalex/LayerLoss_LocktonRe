@@ -50,7 +50,7 @@ def allocate_claims(
 
     # ── 2. Normalise types ──────────────────────────────────────────────
     claims = claims_df.copy()
-    claims["date"] = pd.to_datetime(claims["date"])
+    claims["date"] = pd.to_datetime(claims["date"], format='ISO8601')
     claims["year"] = claims["date"].dt.year
     claims["loss"] = claims["loss"].astype(float)
     claims["alae"] = claims["alae"].astype(float)

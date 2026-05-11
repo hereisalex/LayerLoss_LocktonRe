@@ -54,7 +54,7 @@ def validate_claims(claims_df: pd.DataFrame) -> None:
 
     # Date parsing
     try:
-        pd.to_datetime(claims_df["date"])
+        pd.to_datetime(claims_df["date"], format='ISO8601')
     except Exception as exc:
         raise ValueError(
             f"claims_df 'date' column contains unparseable values: {exc}"
