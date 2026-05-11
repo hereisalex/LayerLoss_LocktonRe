@@ -12,7 +12,7 @@ The complete pipeline lives in [allocator.py](src/allocator.py#L18-L112), which 
 
 > ***AI tools:** Use any AI coding assistant you'd like. Explain in the README how you used it.*
 
-Disclosed in [README.md](README.md#L57-L67) under "AI Tool Usage". Documents five phases of AI assistance: analysis, implementation planning, code generation, test design, and self-review.
+Disclosed in [README.md](README.md#L65-L73) under "AI Tool Usage". Documents five phases of AI assistance: analysis, implementation planning, code generation, test design, and self-review.
 
 ---
 
@@ -155,15 +155,15 @@ Aggregation at [allocator.py:L90-L95](src/allocator.py#L90-L95) via `groupby(["y
 
 > *A small script that reads `claims.csv` and `layers.csv`, calls `allocate_claims`, writes to `cessions.csv`.*
 
-Implemented in [run.py](run.py#L1-L55).
+Implemented in [run.py](run.py#L1-L54).
 
 > *Format: `python run.py --claims claims.csv --layers layers.csv --output cessions.csv`*
 
-CLI argument parsing at [run.py:L21-L39](run.py#L21-L39) using `argparse`. All three flags (`--claims`, `--layers`, `--output`) are `required=True`.
+CLI argument parsing at [run.py:L20-L38](run.py#L20-L38) using `argparse`. All three flags (`--claims`, `--layers`, `--output`) are `required=True`.
 
-- CSV reading at [run.py:L42-L43](run.py#L42-L43)
-- Allocation call at [run.py:L46](run.py#L46)
-- CSV writing at [run.py:L49](run.py#L49)
+- CSV reading at [run.py:L41-L42](run.py#L41-L42)
+- Allocation call at [run.py:L45](run.py#L45)
+- CSV writing at [run.py:L48](run.py#L48)
 
 Verified by running:
 ```
@@ -223,7 +223,7 @@ Each module has a single responsibility and is independently testable. The orche
 
 > *Docstrings and README*
 
-- **README**: [README.md](README.md) with setup, run, and test commands ([L5-L22](README.md#L5-L22)), project structure ([L24-L41](README.md#L24-L41)), design decisions with rationale ([L43-L55](README.md#L43-L55)), and AI tool usage ([L57-L67](README.md#L57-L67)).
+- **README**: [README.md](README.md) with setup, run, and test commands ([L5-L22](README.md#L5-L22)), project structure ([L24-L45](README.md#L24-L45)), design decisions with rationale ([L47-L59](README.md#L47-L59)), and AI tool usage ([L65-L73](README.md#L65-L73)).
 - **Module docstrings**: Every module has a top-level docstring explaining its purpose and scope (e.g., [layer_math.py:L1-L12](src/layer_math.py#L1-L12) lists all three treatments).
 - **Function docstrings**: NumPy-style with Parameters, Returns, and Raises sections. Example: [allocate_claims](src/allocator.py#L22-L48) (26 lines), [compute_cession_pre_aal](src/layer_math.py#L105-L128) (23 lines), [apply_aal](src/aal.py#L16-L34) (18 lines).
 - **Inline comments**: Section headers in the orchestrator (`# ── 1. Validate ──`, etc.) make the pipeline steps scannable at a glance.
@@ -237,9 +237,9 @@ Each module has a single responsibility and is independently testable. The orche
 
 | File | Tests | Scope |
 |---|:---:|---|
-| [test_layer_math.py](tests/test_layer_math.py) | 21 | `clamp`, 3 ALAE treatments × multiple scenarios, invalid treatment |
+| [test_layer_math.py](tests/test_layer_math.py) | 22 | `clamp`, 3 ALAE treatments × multiple scenarios, invalid treatment |
 | [test_aal.py](tests/test_aal.py) | 8 | Under/exact/partial/full AAL exhaustion, year reset, tiebreaking, layer independence, sanity check #2 |
-| [test_allocator.py](tests/test_allocator.py) | 16 | Both sanity checks, output schema (columns + dtypes), 7 edge cases including empty input |
+| [test_allocator.py](tests/test_allocator.py) | 15 | Both sanity checks, output schema (columns + dtypes), 7 edge cases including empty input |
 | [test_validation.py](tests/test_validation.py) | 15 | Missing columns, nulls, duplicates (claim_id + layer_name), negative values, zero limits, bad enums, bad dates |
 
 Tests mirror the source module structure (1:1 mapping). Test docstrings explain intent where non-obvious. `pytest.approx` used throughout for floating-point comparisons.
@@ -324,16 +324,18 @@ Tested end-to-end in [TestSanityCheck2](tests/test_allocator.py#L53-L79) and at 
 
 > *Git repo (preferred)*
 
-Git repository with 3 incremental commits:
+Git repository with incremental commits:
 ```
 feda7e1 Initial implementation: layered loss allocation calculator
 5e2b931 Add reinsurance cession engine: 3 ALAE treatments, AAL bookkeeping, validation
 b723db3 Tighten types, add empty-input/duplicate-layer guards, expand to 60 tests
+1f3ddf3 docs: add comprehensive assignment completion report
+4d0a16c docs: reference assignment completion report in README
 ```
 
 > *`README.md` with: setup, run, test commands; a short note on tradeoffs and AI tool usage*
 
-[README.md](README.md) contains all required sections: Setup ([L5-L10](README.md#L5-L10)), Run ([L12-L16](README.md#L12-L16)), Test ([L18-L22](README.md#L18-L22)), Design Decisions ([L43-L55](README.md#L43-L55)), AI Tool Usage ([L57-L67](README.md#L57-L67)).
+[README.md](README.md) contains all required sections: Setup ([L5-L10](README.md#L5-L10)), Run ([L12-L16](README.md#L12-L16)), Test ([L18-L22](README.md#L18-L22)), Design Decisions ([L47-L59](README.md#L47-L59)), AI Tool Usage ([L65-L73](README.md#L65-L73)).
 
 > *Sample input CSVs are provided; `run.py` should reproduce a `cessions.csv` against them*
 

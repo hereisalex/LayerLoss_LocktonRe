@@ -25,19 +25,23 @@ python -m pytest tests/ -v
 
 ```
 ├── src/
+│   ├── __init__.py      # Package marker
 │   ├── layer_math.py    # Per-claim cession: 3 ALAE treatments (excluded, pro_rata, part_of)
 │   ├── aal.py           # Annual Aggregate Limit bookkeeping
 │   ├── validation.py    # Input validation with descriptive error messages
 │   └── allocator.py     # Orchestrator: validate → compute → cap → aggregate
 ├── tests/
+│   ├── __init__.py          # Package marker
 │   ├── test_layer_math.py   # Unit tests for each ALAE treatment
 │   ├── test_aal.py          # Unit tests for AAL exhaustion and reset
 │   ├── test_validation.py   # Unit tests for input validation
 │   └── test_allocator.py    # Integration tests (sanity checks + edge cases)
-├── run.py               # CLI driver script
-├── claims.csv           # Sample claims input
-├── layers.csv           # Sample layers input
-└── requirements.txt     # pandas, pytest
+├── run.py                               # CLI driver script
+├── claims.csv                           # Sample claims input
+├── layers.csv                           # Sample layers input
+├── requirements.txt                     # pandas, pytest
+├── layer_loss_assignment.md             # Original assignment specification
+└── layer_loss_assignment_completed.md   # Detailed compliance and completion report
 ```
 
 ## Design Decisions
