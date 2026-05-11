@@ -5,6 +5,9 @@ import pytest
 
 from src.allocator import allocate_claims
 
+# ── Expected output columns and dtypes ──────────────────────────────────
+_EXPECTED_COLUMNS = ["year", "layer_name", "ceded_amount"]
+
 
 class TestSanityCheck1:
     """Sanity check #1 from the assignment: per-claim layer math, no AAL binding."""
@@ -74,6 +77,61 @@ class TestSanityCheck2:
     def test_row_count(self):
         result = allocate_claims(self.claims, self.layers)
         assert len(result) == 2  # 2 years × 1 layer
+
+
+class TestOutputSchema:
+    """Verify the output DataFrame has exactly the specified columns."""
+
+    def test_output_columns(self):
+        claims = pd.DataFrame({
+            "claim_id": ["C1"],
+            "date": ["2023-01-01"],
+            "loss": [1_000_000.0],
+            "alae": [0.0],
+        })
+        layers = pd.DataFrame({
+            "layer_name": ["L1"],
+            "attachment": [0.0],
+            "limit": [1_000_000.0],
+            "aal": [5_000_000.0],
+            "alae_treatment": ["excluded"],
+        })
+        result = allocate_claims(claims, layers)
+        assert list(result.columns) == _EXPECTED_COLUMNS
+
+    def test_year_column_is_int(self):
+        claims = pd.DataFrame({
+            "claim_id": ["C1"],
+            "date": ["2023-06-15"],
+            "loss": [500_000.0],
+            "alae": [0.0],
+        })
+        layers = pd.DataFrame({
+            "layer_name": ["L1"],
+            "attachment": [0.0],
+            "limit": [1_000_000.0],
+            "aal": [5_000_000.0],
+            "alae_treatment": ["excluded"],
+        })
+        result = allocate_claims(claims, layers)
+        assert result["year"].dtype in ("int64", "int32")
+
+    def test_ceded_amount_is_float(self):
+        claims = pd.DataFrame({
+            "claim_id": ["C1"],
+            "date": ["2023-06-15"],
+            "loss": [500_000.0],
+            "alae": [0.0],
+        })
+        layers = pd.DataFrame({
+            "layer_name": ["L1"],
+            "attachment": [0.0],
+            "limit": [1_000_000.0],
+            "aal": [5_000_000.0],
+            "alae_treatment": ["excluded"],
+        })
+        result = allocate_claims(claims, layers)
+        assert result["ceded_amount"].dtype == "float64"
 
 
 class TestEdgeCases:
@@ -150,6 +208,47 @@ class TestEdgeCases:
         result = allocate_claims(claims, layers)
         # 2 years × 2 layers = 4 rows
         assert len(result) == 4
+
+    def test_multi_layer_aal_binding_interaction(self):
+        """One layer's AAL binds while another does not — layers are independent."""
+        claims = pd.DataFrame({
+            "claim_id": ["C1", "C2"],
+            "date": ["2023-01-01", "2023-06-01"],
+            "loss": [3_000_000.0, 3_000_000.0],
+            "alae": [0.0, 0.0],
+        })
+        layers = pd.DataFrame({
+            "layer_name": ["L1", "L2"],
+            "attachment": [0.0, 0.0],
+            "limit": [2_000_000.0, 2_000_000.0],
+            "aal": [3_000_000.0, 10_000_000.0],
+            "alae_treatment": ["excluded", "excluded"],
+        })
+        result = allocate_claims(claims, layers)
+        result = result.set_index("layer_name")
+        # L1 AAL=3M: C1 cedes 2M, C2 cedes min(2M, 1M remaining) = 1M → 3M total
+        assert result.loc["L1", "ceded_amount"] == pytest.approx(3_000_000.0)
+        # L2 AAL=10M: C1 cedes 2M, C2 cedes 2M → 4M total, well under AAL
+        assert result.loc["L2", "ceded_amount"] == pytest.approx(4_000_000.0)
+
+    def test_empty_claims(self):
+        """Empty claims DataFrame produces an empty result (no crash)."""
+        claims = pd.DataFrame({
+            "claim_id": pd.Series([], dtype="str"),
+            "date": pd.Series([], dtype="str"),
+            "loss": pd.Series([], dtype="float64"),
+            "alae": pd.Series([], dtype="float64"),
+        })
+        layers = pd.DataFrame({
+            "layer_name": ["L1"],
+            "attachment": [0.0],
+            "limit": [1_000_000.0],
+            "aal": [1_000_000.0],
+            "alae_treatment": ["excluded"],
+        })
+        result = allocate_claims(claims, layers)
+        assert len(result) == 0
+        assert list(result.columns) == _EXPECTED_COLUMNS
 
     def test_invalid_claims_raises(self):
         claims = pd.DataFrame({

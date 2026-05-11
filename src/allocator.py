@@ -12,6 +12,8 @@ from src.aal import apply_aal
 from src.layer_math import compute_cession_pre_aal
 from src.validation import validate_claims, validate_layers
 
+__all__ = ["allocate_claims"]
+
 
 def allocate_claims(
     claims_df: pd.DataFrame,
@@ -50,6 +52,11 @@ def allocate_claims(
 
     # ── 2. Normalise types ──────────────────────────────────────────────
     claims = claims_df.copy()
+
+    # Early return for empty claims — nothing to allocate.
+    if claims.empty:
+        return pd.DataFrame(columns=["year", "layer_name", "ceded_amount"])
+
     claims["date"] = pd.to_datetime(claims["date"], format='ISO8601')
     claims["year"] = claims["date"].dt.year
     claims["loss"] = claims["loss"].astype(float)

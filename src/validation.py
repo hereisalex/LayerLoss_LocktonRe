@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import pandas as pd
 
+__all__ = ["validate_claims", "validate_layers"]
+
 # ── Required schemas ────────────────────────────────────────────────────
 _CLAIMS_REQUIRED_COLUMNS = {"claim_id", "date", "loss", "alae"}
 _LAYERS_REQUIRED_COLUMNS = {
@@ -72,6 +74,7 @@ def validate_layers(layers_df: pd.DataFrame) -> None:
     ----------------
     * All required columns are present.
     * No null values in required columns.
+    * ``layer_name`` values are unique.
     * ``attachment`` ≥ 0.
     * ``limit`` > 0 and ``aal`` > 0.
     * ``alae_treatment`` is one of the three recognised values.
@@ -85,6 +88,16 @@ def validate_layers(layers_df: pd.DataFrame) -> None:
         raise ValueError(
             f"layers_df has null values in columns: "
             f"{dict(cols_with_nulls)}"
+        )
+
+    # Unique layer_name
+    if layers_df["layer_name"].duplicated().any():
+        dupes = layers_df.loc[
+            layers_df["layer_name"].duplicated(keep=False), "layer_name"
+        ].unique()
+        raise ValueError(
+            f"layers_df contains duplicate layer_name values: "
+            f"{list(dupes)}"
         )
 
     # Numeric constraints

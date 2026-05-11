@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import pandas as pd
 
+__all__ = ["apply_aal"]
+
 
 def apply_aal(pre_aal_df: pd.DataFrame) -> pd.DataFrame:
     """Apply Annual Aggregate Limits to pre-AAL cession amounts.

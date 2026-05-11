@@ -99,3 +99,10 @@ class TestValidateLayers:
         df.loc[0, "layer_name"] = None
         with pytest.raises(ValueError, match="null values"):
             validate_layers(df)
+
+    def test_duplicate_layer_name(self):
+        """Duplicate layer_name values should be rejected."""
+        df = self._valid()
+        df.loc[1, "layer_name"] = "L1"
+        with pytest.raises(ValueError, match="duplicate layer_name"):
+            validate_layers(df)
